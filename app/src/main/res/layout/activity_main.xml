@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- 상단 위치 표시 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#0d1b2a"
+        android:padding="28dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="현재 위치"
+            android:textColor="#99FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCurrentLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="위치 측정 중..."
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:contentDescription="현재 위치 표시" />
+
+        <TextView
+            android:id="@+id/tvLocStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="측정 중"
+            android:textColor="#5dcaa5"
+            android:textSize="13sp"
+            android:layout_marginTop="6dp" />
+    </LinearLayout>
+
+    <!-- WiFi 신호 정보 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#F5F5F5"
+            android:padding="14dp"
+            android:layout_marginEnd="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WiFi 신호"
+                android:textSize="12sp"
+                android:textColor="#888888" />
+
+            <TextView
+                android:id="@+id/tvWifiStrength"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="측정 중..."
+                android:textSize="15sp"
+                android:textColor="#0f6e56"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#F5F5F5"
+            android:padding="14dp"
+            android:layout_marginStart="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="서버 연결"
+                android:textSize="12sp"
+                android:textColor="#888888" />
+
+            <TextView
+                android:id="@+id/tvServerStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="대기 중"
+                android:textSize="15sp"
+                android:textColor="#222222"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 메인 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/btnCheckLocation"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:text="시작 위치 확인"
+            android:textSize="18sp"
+            android:textColor="#0d1b2a"
+            android:backgroundTint="#F0F0F0"
+            android:contentDescription="시작 위치 확인. WiFi 신호로 현재 위치를 측정합니다. 두 번 탭하여 활성화."
+            android:layout_marginBottom="14dp" />
+
+        <Button
+            android:id="@+id/btnGoDirection"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:text="경로 안내 시작"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#0d1b2a"
+            android:contentDescription="경로 안내 시작. 승강장까지 방향 안내를 시작합니다. 두 번 탭하여 활성화."
+            android:enabled="false" />
+    </LinearLayout>
+</LinearLayout>
