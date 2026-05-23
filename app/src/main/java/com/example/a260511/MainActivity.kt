@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvWifi: TextView
     private lateinit var btnCheck: Button
     private lateinit var btnGo: Button
+    private lateinit var btnReset: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         tvWifi = findViewById(R.id.tvWifiStrength)
         btnCheck = findViewById(R.id.btnCheckLocation)
         btnGo = findViewById(R.id.btnGoDirection)
+        btnReset = findViewById(R.id.btnReset)
 
         btnCheck.setOnClickListener {
             // 권한이 없으면 먼저 요청하고, 허용되면 자동으로 측위 진행
@@ -61,10 +63,32 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // 초기화 버튼: 측정 결과를 모두 비우고 처음 상태로 되돌림
+        btnReset.setOnClickListener {
+            resetState()
+        }
+
         // 시작 시 미리 권한 요청 (있으면 콜백 안 옴)
         if (!hasLocationPermission()) {
             requestLocationPermission()
         }
+    }
+
+    private fun resetState() {
+        // 진행 중이던 재시도/지연 콜백 취소
+        handler.removeCallbacksAndMessages(null)
+
+        // 상태 값 초기화
+        currentNode = ""
+        routeNodes = listOf()
+        pendingLocate = false
+
+        // 화면 초기화
+        tvLocation.text = "-"
+        tvStatus.text = "대기 중"
+        tvWifi.text = "-"
+        btnCheck.isEnabled = true
+        btnGo.isEnabled = false
     }
 
     private fun hasLocationPermission(): Boolean {

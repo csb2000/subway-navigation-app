@@ -132,6 +132,17 @@
             android:textColor="#FFFFFF"
             android:backgroundTint="#0d1b2a"
             android:contentDescription="경로 안내 시작. 승강장까지 방향 안내를 시작합니다. 두 번 탭하여 활성화."
-            android:enabled="false" />
+            android:enabled="false"
+            android:layout_marginBottom="14dp" />
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="초기화"
+            android:textSize="16sp"
+            android:textColor="#0d1b2a"
+            android:backgroundTint="#E8E8E8"
+            android:contentDescription="초기화. 측정 결과를 지우고 처음 상태로 되돌립니다. 두 번 탭하여 활성화." />
     </LinearLayout>
 </LinearLayout>
