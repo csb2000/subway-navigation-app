@@ -5,7 +5,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -16,14 +15,15 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.abs
 
 class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
+
     private lateinit var sensorManager: SensorManager
     private lateinit var vibrator: Vibrator
     private lateinit var tts: TextToSpeech
+    private var ttsReady = false
 
     private var targetAzimuth = 0f
     private var currentAzimuth = 0f
@@ -33,6 +33,8 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     private var path = listOf<String>()
     private var edgeTypes = listOf<String>()
     private var currentNodeIndex = 0
+    private var isFirstNode = false
+    private var destinationName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +43,11 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
         path = intent.getStringArrayListExtra("path") ?: listOf()
         edgeTypes = intent.getStringArrayListExtra("edgeTypes") ?: listOf()
         currentNodeIndex = intent.getIntExtra("currentNodeIndex", 0)
+        isFirstNode = intent.getBooleanExtra("isFirstNode", false)
+        destinationName = intent.getStringExtra("destinationName") ?: ""
 
         val currentNode = if (path.isNotEmpty()) path[currentNodeIndex] else ""
         val nextNode = if (currentNodeIndex + 1 < path.size) path[currentNodeIndex + 1] else ""
-
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
@@ -53,12 +56,18 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts.language = Locale.KOREAN
-                if (isDanger) tts.speak("계단 구간입니다. 주의하세요.", TextToSpeech.QUEUE_FLUSH, null, null)
-                else tts.speak("정면 방향을 맞춰주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+                ttsReady = true
+                when {
+                    isDanger -> speak("계단 구간입니다. 주의하세요.")
+                    isFirstNode && destinationName.isNotEmpty() -> speak("${destinationName}을 목적지로 설정하였습니다. 이동 방향을 확인하세요.")
+                    else -> speak("다음 노드에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.")
+                }
             }
         }
 
-        findViewById<TextView>(R.id.tvDestInfo).text = "다음 구역: $nextNode${if (isDanger) " [계단 주의]" else ""}"
+        val koreanNext = nodeNameMap[nextNode] ?: nextNode
+        findViewById<TextView>(R.id.tvDestInfo).text =
+            "다음: $koreanNext${if (isDanger) " ⚠ 계단" else ""}"
 
         val btnStart = findViewById<Button>(R.id.btnStartMove)
         btnStart.isEnabled = false
@@ -67,6 +76,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
                 putStringArrayListExtra("path", ArrayList(path))
                 putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
                 putExtra("currentNodeIndex", currentNodeIndex)
+                putExtra("destinationName", destinationName)
             })
         }
 
@@ -89,7 +99,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
         } else {
             findViewById<Button>(R.id.btnStartMove).isEnabled = true
-            findViewById<TextView>(R.id.tvDirectionStatus).text = "방향 감지 준비 완료 (센서 생략)"
+            findViewById<TextView>(R.id.tvDirectionStatus).text = "방향 확인 준비됨"
         }
     }
 
@@ -116,31 +126,31 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
         val tvVib = findViewById<TextView>(R.id.tvVibrationInfo)
         val btnStart = findViewById<Button>(R.id.btnStartMove)
 
-        tvAngle.text = "목표각과의 차이: ${diff.toInt()}°"
+        tvAngle.text = "각도 차이: ${diff.toInt()}°"
 
         when {
             diff <= 15 -> {
                 correctSeconds++
-                tvStatus.text = "올바른 방향입니다! ($correctSeconds / $requiredSeconds 초)"
-                tvVib.text = "강한 진동 알림 중"
+                tvStatus.text = "올바른 방향! (${correctSeconds}/${requiredSeconds}초)"
+                tvVib.text = "진동 2회/초"
                 vibrate(500, 500)
                 if (correctSeconds >= requiredSeconds) {
                     vibrator.cancel()
                     btnStart.isEnabled = true
-                    tvStatus.text = "방향 고정 완료! 출발하세요."
-                    tts.speak("방향이 확인되었습니다. 출발 버튼을 눌러주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+                    tvStatus.text = "방향 확인 완료!"
+                    speak("방향이 일치합니다. 다음 구역에 도달할때까지 직진하세요.")
                 }
             }
             diff <= 30 -> {
                 correctSeconds = 0
-                tvStatus.text = "조금만 더 몸을 돌려보세요."
-                tvVib.text = "약한 패스형 진동 중"
-                vibrate(200, 800)
+                tvStatus.text = "조금만 더 돌려주세요"
+                tvVib.text = "진동 1회/초"
                 btnStart.isEnabled = false
+                vibrate(300, 700)
             }
             else -> {
                 correctSeconds = 0
-                tvStatus.text = "몸을 회전하여 방향을 찾으세요."
+                tvStatus.text = "몸을 천천히 돌려주세요"
                 tvVib.text = "진동 없음"
                 btnStart.isEnabled = false
                 vibrator.cancel()
@@ -149,14 +159,18 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun vibrate(onMs: Long, offMs: Long) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val pattern = longArrayOf(0, onMs, offMs)
-            vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(longArrayOf(0, onMs, offMs), 0)
-        }
+        val pattern = longArrayOf(0, onMs, offMs)
+        vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
+    }
+
+    private fun speak(text: String) {
+        if (ttsReady) tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    override fun onDestroy() {
+        tts.shutdown()
+        super.onDestroy()
+    }
 }

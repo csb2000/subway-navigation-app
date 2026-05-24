@@ -2,17 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:orientation="vertical">
 
-    <!-- 상단 위치 표시 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="#0d1b2a"
-        android:padding="28dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="28dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -25,124 +24,128 @@
             android:id="@+id/tvCurrentLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="위치 측정 중..."
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:contentDescription="현재 위치 표시" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvLocStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:text="측정 중"
             android:textColor="#5dcaa5"
-            android:textSize="13sp"
-            android:layout_marginTop="6dp" />
+            android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- WiFi 신호 정보 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
             android:layout_weight="1"
-            android:orientation="vertical"
             android:background="#F5F5F5"
-            android:padding="14dp"
-            android:layout_marginEnd="6dp">
+            android:orientation="vertical"
+            android:padding="14dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WiFi 신호"
-                android:textSize="12sp"
-                android:textColor="#888888" />
+                android:textColor="#888888"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvWifiStrength"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="측정 중..."
-                android:textSize="15sp"
                 android:textColor="#0f6e56"
-                android:layout_marginTop="4dp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:orientation="vertical"
             android:background="#F5F5F5"
-            android:padding="14dp"
-            android:layout_marginStart="6dp">
+            android:orientation="vertical"
+            android:padding="14dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="서버 연결"
-                android:textSize="12sp"
-                android:textColor="#888888" />
+                android:text="목적지"
+                android:textColor="#888888"
+                android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/tvServerStatus"
+                android:id="@+id/tvSelectedDestination"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="대기 중"
-                android:textSize="15sp"
+                android:layout_marginTop="4dp"
+                android:text="미설정"
                 android:textColor="#222222"
-                android:layout_marginTop="4dp" />
+                android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 메인 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btnSetDestination"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_marginBottom="14dp"
+            android:backgroundTint="#F0F0F0"
+            android:text="목적지 설정"
+            android:textColor="#0d1b2a"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btnCheckLocation"
             android:layout_width="match_parent"
             android:layout_height="90dp"
-            android:text="시작 위치 확인"
-            android:textSize="18sp"
-            android:textColor="#0d1b2a"
+            android:layout_marginBottom="14dp"
             android:backgroundTint="#F0F0F0"
-            android:contentDescription="시작 위치 확인. WiFi 신호로 현재 위치를 측정합니다. 두 번 탭하여 활성화."
-            android:layout_marginBottom="14dp" />
+            android:text="현 위치 확인"
+            android:textColor="#0d1b2a"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btnGoDirection"
             android:layout_width="match_parent"
             android:layout_height="90dp"
-            android:text="경로 안내 시작"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
+            android:layout_marginBottom="14dp"
             android:backgroundTint="#0d1b2a"
-            android:contentDescription="경로 안내 시작. 승강장까지 방향 안내를 시작합니다. 두 번 탭하여 활성화."
             android:enabled="false"
-            android:layout_marginBottom="14dp" />
+            android:text="경로 안내 시작"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btnReset"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="초기화"
-            android:textSize="16sp"
-            android:textColor="#0d1b2a"
             android:backgroundTint="#E8E8E8"
-            android:contentDescription="초기화. 측정 결과를 지우고 처음 상태로 되돌립니다. 두 번 탭하여 활성화." />
+            android:text="초기화"
+            android:textColor="#0d1b2a"
+            android:textSize="16sp" />
     </LinearLayout>
 </LinearLayout>

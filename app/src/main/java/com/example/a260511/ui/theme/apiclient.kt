@@ -34,7 +34,6 @@ interface SubwayApi {
 }
 
 object ApiClient {
-    // 로컬 Flask 서버 주소 (에뮬레이터용 10.0.2.2)
     private const val BASE_URL = "http://10.0.2.2:5000"
 
     private val logging = HttpLoggingInterceptor().apply {
@@ -54,3 +53,17 @@ object ApiClient {
         .build()
         .create(SubwayApi::class.java)
 }
+
+val nodeNameMap = mapOf(
+    "station_exit" to "역 출입구",
+    "fare_gate" to "개찰구",
+    "floor1_hall" to "1층 홀",
+    "floor1_stairs" to "1층 계단",
+    "stairs_mid" to "계단 중간",
+    "b1_stairs" to "지하 계단",
+    "b1_elevator" to "지하 엘리베이터 앞",
+    "b1_down_stairs_front" to "하행 계단 앞",
+    "down_platform" to "하행 승강장",
+    "b1_up_stairs_front" to "상행 계단 앞",
+    "up_platform" to "상행 승강장"
+)
