@@ -5,7 +5,6 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.speech.tts.TextToSpeech
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -15,11 +14,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class NavigationActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var tts: TextToSpeech
 
     private var path = listOf<String>()
     private var edgeTypes = listOf<String>()
@@ -38,10 +35,6 @@ class NavigationActivity : AppCompatActivity() {
         currentNodeIndex = intent.getIntExtra("currentNodeIndex", 0)
         destinationName = intent.getStringExtra("destinationName") ?: ""
 
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) tts.language = Locale.KOREAN
-        }
-
         updateNodeUI()
 
         findViewById<Button>(R.id.btnNodeArrived).setOnClickListener {
@@ -50,9 +43,10 @@ class NavigationActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnStopNav).setOnClickListener {
             stopCollect()
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            })
+            TtsManager.stop()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
     }
 
@@ -143,13 +137,14 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun onNodeArrived() {
+        // 사양 6번: 마지막 노드 = 목적지 도달
         if (currentNodeIndex >= path.size - 1) {
-            tts.speak("목적지에 도달하였습니다. 초기화면으로 돌아갑니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+            TtsManager.speak("목적지에 도달하였습니다. 초기화면으로 돌아갑니다.")
             stopCollect()
             handler.postDelayed({
-                startActivity(Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                })
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
             }, 3000)
             return
         }
@@ -157,23 +152,24 @@ class NavigationActivity : AppCompatActivity() {
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
         val koreanName = nodeNameMap[path[currentNodeIndex]] ?: path[currentNodeIndex]
 
+        // 사양 5번: 다음 노드 도달 안내 (시작점·목적지 제외한 중간 노드)
         if (isDanger) {
-            tts.speak("계단 구간입니다. 주의하세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            TtsManager.speak("계단 구간입니다. 주의하세요.")
             findViewById<LinearLayout>(R.id.layoutDangerAlert).visibility = View.VISIBLE
         } else {
-            tts.speak("${koreanName}에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            TtsManager.speak("다음 노드에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.")
             findViewById<LinearLayout>(R.id.layoutDangerAlert).visibility = View.GONE
         }
 
         updateNodeUI()
 
-        startActivity(Intent(this, DirectionCheckActivity::class.java).apply {
-            putStringArrayListExtra("path", ArrayList(path))
-            putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
-            putExtra("currentNodeIndex", currentNodeIndex)
-            putExtra("isFirstNode", false)
-            putExtra("destinationName", destinationName)
-        })
+        val nextIntent = Intent(this, DirectionCheckActivity::class.java)
+        nextIntent.putStringArrayListExtra("path", ArrayList(path))
+        nextIntent.putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
+        nextIntent.putExtra("currentNodeIndex", currentNodeIndex)
+        nextIntent.putExtra("isFirstNode", false)
+        nextIntent.putExtra("destinationName", destinationName)
+        startActivity(nextIntent)
     }
 
     private fun updateNodeUI() {
@@ -191,7 +187,6 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         stopCollect()
-        tts.shutdown()
         super.onDestroy()
     }
 }

@@ -72,12 +72,19 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
         val btnStart = findViewById<Button>(R.id.btnStartMove)
         btnStart.isEnabled = false
         btnStart.setOnClickListener {
-            startActivity(Intent(this, NavigationActivity::class.java).apply {
-                putStringArrayListExtra("path", ArrayList(path))
-                putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
-                putExtra("currentNodeIndex", currentNodeIndex)
-                putExtra("destinationName", destinationName)
-            })
+            val navIntent = Intent(this, NavigationActivity::class.java)
+            navIntent.putStringArrayListExtra("path", ArrayList(path))
+            navIntent.putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
+            navIntent.putExtra("currentNodeIndex", currentNodeIndex)
+            navIntent.putExtra("destinationName", destinationName)
+            startActivity(navIntent)
+        }
+
+        findViewById<TextView>(R.id.btnCancelDirection).setOnClickListener {
+            tts.stop()
+            val mainIntent = Intent(this, MainActivity::class.java)
+            mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(mainIntent)
         }
 
         if (currentNode.isNotEmpty() && nextNode.isNotEmpty()) {

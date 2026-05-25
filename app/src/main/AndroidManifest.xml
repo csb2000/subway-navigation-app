@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:label="지하철 보행지원"
         android:usesCleartextTraffic="true"
@@ -23,6 +24,7 @@
         <activity android:name=".DirectionCheckActivity" />
         <activity android:name=".NavigationActivity" />
         <activity android:name=".ArriveActivity" />
+        <activity android:name=".DestinationActivity" />
 
     </application>
 </manifest>
