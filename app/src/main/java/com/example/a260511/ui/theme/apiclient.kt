@@ -34,7 +34,7 @@ interface SubwayApi {
 }
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:5000"
+    private const val BASE_URL = "https://sporty-press-unfeeling.ngrok-free.dev"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -42,6 +42,12 @@ object ApiClient {
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("ngrok-skip-browser-warning", "true")
+                .build()
+            chain.proceed(request)
+        }
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
