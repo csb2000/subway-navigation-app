@@ -24,7 +24,10 @@ class MainActivity : AppCompatActivity() {
 
     private var currentNode: String = ""
     private val fallbackNode = "station_exit"
-    private val maxRetries = 3
+    private val maxRetries = 5
+    private val minApCount = 3
+    private val topApCount = 20
+    private val majorityThreshold = 3
 
     private lateinit var tvLocation: TextView
     private lateinit var tvStatus: TextView
@@ -108,63 +111,100 @@ class MainActivity : AppCompatActivity() {
     private fun checkLocationWithRetry() {
         TtsManager.speak("위치를 확인합니다.")
         tvStatus.text = "위치 측정 중..."
-        Log.d("MainActivity", "위치 측정 시작")
 
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         var attemptCount = 0
+        val nodeVotes = mutableListOf<String>()
+        val recentScanWindows = mutableListOf<List<WifiAp>>()
 
-        // [FIX] BroadcastReceiver로 스캔 완료 이벤트 수신
-        val receiver = object : BroadcastReceiver() {
+        var receiver: BroadcastReceiver? = null
+        receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
                 attemptCount++
-                Log.d("MainActivity", "스캔 완료 (시도 $attemptCount, success=$success)")
                 tvStatus.text = "위치 측정 중... ($attemptCount/$maxRetries)"
+                Log.d("MainActivity", "스캔 완료 (시도 $attemptCount)")
 
-                val wifiList = try {
-                    filterWifi(wifiManager.scanResults).also {
-                        Log.d("MainActivity", "필터링 후 AP ${it.size}개")
-                    }
+                val rawList = try {
+                    filterWifi(wifiManager.scanResults)
                 } catch (e: Exception) {
                     Log.e("MainActivity", "스캔 결과 읽기 오류: ${e.message}")
                     emptyList()
                 }
 
-                if (wifiList.isNotEmpty()) {
-                    // AP 잡혔으면 수신 해제 후 서버 전송
-                    unregisterReceiver(this)
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val node = ApiClient.api.locate(LocateRequest(wifiList)).node
-                            Log.d("MainActivity", "서버 위치 인식 성공: $node")
-                            withContext(Dispatchers.Main) {
-                                applyNode(node, measured = true)
-                                TtsManager.speak("현 위치는 ${nodeNameMap[node] ?: node}으로 추정됩니다.")
+                if (rawList.size < minApCount) {
+                    Log.w("MainActivity", "AP ${rawList.size}개 - 너무 적음, 재시도")
+                    if (attemptCount < maxRetries) {
+                        tvStatus.postDelayed({ wifiManager.startScan() }, 1000)
+                    } else {
+                        unregisterReceiver(receiver)
+                        applyNode(fallbackNode, measured = false)
+                        TtsManager.speak("위치 측정에 실패하였습니다. 기본 위치로 진행합니다.")
+                    }
+                    return
+                }
+
+                val topList = rawList.sortedByDescending { it.rssi }.take(topApCount)
+                recentScanWindows.add(topList)
+                if (recentScanWindows.size > 3) recentScanWindows.removeAt(0)
+                val averaged = computeSlidingAverage(recentScanWindows)
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val node = ApiClient.api.locate(LocateRequest(averaged)).node
+                        Log.d("MainActivity", "서버 응답: $node (시도 $attemptCount)")
+
+                        withContext(Dispatchers.Main) {
+                            nodeVotes.add(node)
+                            val majority = nodeVotes.groupingBy { it }
+                                .eachCount()
+                                .maxByOrNull { it.value }
+
+                            Log.d("MainActivity", "투표 현황: $nodeVotes")
+
+                            if (majority != null && majority.value >= majorityThreshold) {
+                                unregisterReceiver(receiver)
+                                applyNode(majority.key, measured = true)
+                                TtsManager.speak("현 위치는 ${nodeNameMap[majority.key] ?: majority.key}으로 추정됩니다.")
+                            } else if (attemptCount >= maxRetries) {
+                                unregisterReceiver(receiver)
+                                val best = majority?.key ?: fallbackNode
+                                Log.w("MainActivity", "최대 시도 도달 - 최다득표: $best (${majority?.value}표)")
+                                applyNode(best, measured = true)
+                                TtsManager.speak("현 위치는 ${nodeNameMap[best] ?: best}으로 추정됩니다.")
+                            } else {
+                                tvStatus.postDelayed({ wifiManager.startScan() }, 500)
                             }
-                        } catch (e: Exception) {
-                            Log.e("MainActivity", "서버 locate 실패: ${e.message}")
-                            withContext(Dispatchers.Main) {
+                        }
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "서버 locate 실패: ${e.message}")
+                        withContext(Dispatchers.Main) {
+                            if (attemptCount >= maxRetries) {
+                                unregisterReceiver(receiver)
                                 applyNode(fallbackNode, measured = false)
                                 TtsManager.speak("서버 연결에 실패하였습니다. 기본 위치로 진행합니다.")
+                            } else {
+                                tvStatus.postDelayed({ wifiManager.startScan() }, 1000)
                             }
                         }
                     }
-                } else if (attemptCount >= maxRetries) {
-                    // 3회 실패 → fallback
-                    unregisterReceiver(this)
-                    Log.w("MainActivity", "AP 없음 - $maxRetries 회 실패 → fallback")
-                    applyNode(fallbackNode, measured = false)
-                    TtsManager.speak("위치 측정에 실패하였습니다. 기본 위치인 ${nodeNameMap[fallbackNode]}으로 진행합니다.")
-                } else {
-                    // 재시도
-                    Log.w("MainActivity", "AP 없음 - 재시도 중...")
-                    tvStatus.postDelayed({ wifiManager.startScan() }, 1000)
                 }
             }
         }
 
         registerReceiver(receiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
         wifiManager.startScan()
+    }
+
+    private fun computeSlidingAverage(windows: List<List<WifiAp>>): List<WifiAp> {
+        val apMap = mutableMapOf<String, MutableList<Int>>()
+        for (window in windows) {
+            for (ap in window) {
+                apMap.getOrPut(ap.bssid) { mutableListOf() }.add(ap.rssi)
+            }
+        }
+        return apMap.map { (bssid, rssiList) ->
+            WifiAp(bssid, rssiList.average().toInt())
+        }
     }
 
     private fun filterWifi(scanResults: List<android.net.wifi.ScanResult>): List<WifiAp> {
