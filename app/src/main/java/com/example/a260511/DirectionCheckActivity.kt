@@ -26,16 +26,14 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var vibrator: Vibrator
     private lateinit var tts: TextToSpeech
     private var ttsReady = false
+    private val handler = Handler(Looper.getMainLooper())
 
     private var targetAzimuth = 0f
     private var currentAzimuth = 0f
 
-    // [FIX] correctSeconds → 실제 시간 기반으로 변경
     private var correctStartTime = -1L
-    private val requiredMs = 3000L  // 3초
-    private var directionConfirmed = false  // [FIX] 확인 완료 플래그
-
-    private val handler = Handler(Looper.getMainLooper())
+    private val requiredMs = 3000L
+    private var directionConfirmed = false
 
     private var path = listOf<String>()
     private var edgeTypes = listOf<String>()
@@ -108,7 +106,6 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        // [FIX] 방향 확인 완료된 상태면 센서 등록 안 함
         if (directionConfirmed) return
         val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
         if (sensor != null) {
@@ -133,7 +130,6 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun updateDirectionUI(azimuth: Float) {
-        // [FIX] 이미 확인 완료면 아무것도 안 함
         if (directionConfirmed) return
 
         val diff = abs(azimuth - targetAzimuth).let {
@@ -149,7 +145,6 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
 
         when {
             diff <= 15 -> {
-                // [FIX] 진동 먼저 켜고, 3초 유지 여부를 시간으로 체크
                 if (correctStartTime == -1L) {
                     correctStartTime = System.currentTimeMillis()
                 }
@@ -158,27 +153,30 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
 
                 tvStatus.text = "올바른 방향! (${remaining}초 유지)"
                 tvVib.text = "진동 2회/초"
-                vibrate(500, 500)  // [FIX] 진동 켜고
+                vibrate(500, 500)
 
                 if (elapsed >= requiredMs) {
-                    // [FIX] 3초 유지 → 확인 완료, 그때 진동 끄고 센서 해제
                     directionConfirmed = true
                     vibrator.cancel()
-                    sensorManager.unregisterListener(this)  // [FIX] 센서 즉시 해제
+                    sensorManager.unregisterListener(this)
                     btnStart.isEnabled = true
                     tvStatus.text = "방향 확인 완료!"
                     speak("방향이 일치합니다. 다음 구역에 도달할때까지 직진하세요.")
+                    // [FIX] 1.5초 후 자동으로 이동 시작
+                    handler.postDelayed({
+                        btnStart.performClick()
+                    }, 1500)
                 }
             }
             diff <= 30 -> {
-                correctStartTime = -1L  // [FIX] 타이머 리셋
+                correctStartTime = -1L
                 tvStatus.text = "조금만 더 돌려주세요"
                 tvVib.text = "진동 1회/초"
                 btnStart.isEnabled = false
                 vibrate(300, 700)
             }
             else -> {
-                correctStartTime = -1L  // [FIX] 타이머 리셋
+                correctStartTime = -1L
                 tvStatus.text = "몸을 천천히 돌려주세요"
                 tvVib.text = "진동 없음"
                 btnStart.isEnabled = false
@@ -199,6 +197,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
         tts.shutdown()
         super.onDestroy()
     }
