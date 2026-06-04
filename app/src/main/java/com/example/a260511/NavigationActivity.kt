@@ -5,6 +5,7 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -25,6 +26,11 @@ class NavigationActivity : AppCompatActivity() {
     private var collectTimer: Runnable? = null
 
     private val recentScanWindows = mutableListOf<List<WifiAp>>()
+    private val visitedNodes = mutableSetOf<String>()
+
+    // [FIX] 다음 노드 2회 확인용
+    private var nextNodeConfirmCount = 0
+    private val requiredConfirmCount = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +41,16 @@ class NavigationActivity : AppCompatActivity() {
         currentNodeIndex = intent.getIntExtra("currentNodeIndex", 0)
         destinationName = intent.getStringExtra("destinationName") ?: ""
 
+        val savedVisited = intent.getStringArrayListExtra("visitedNodes") ?: listOf()
+        visitedNodes.addAll(savedVisited)
+        path.getOrNull(currentNodeIndex)?.let { visitedNodes.add(it) }
+
         updateNodeUI()
 
         findViewById<Button>(R.id.btnNodeArrived).setOnClickListener {
+            currentNodeIndex++
+            nextNodeConfirmCount = 0
+            path.getOrNull(currentNodeIndex)?.let { visitedNodes.add(it) }
             onNodeArrived()
         }
 
@@ -65,7 +78,8 @@ class NavigationActivity : AppCompatActivity() {
         collectTimer = object : Runnable {
             override fun run() {
                 scanAndLocateWithWindow()
-                handler.postDelayed(this, 5000)
+                // [FIX] 폴링 주기 8000 → 3000ms
+                handler.postDelayed(this, 3000)
             }
         }
         handler.post(collectTimer!!)
@@ -75,6 +89,7 @@ class NavigationActivity : AppCompatActivity() {
         val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         wifiManager.startScan()
 
+        // [FIX] 스캔 대기 5000 → 2000ms
         handler.postDelayed({
             val currentRawScan = wifiManager.scanResults
                 .filter { it.level >= -90 }
@@ -100,18 +115,46 @@ class NavigationActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val res = ApiClient.api.locate(LocateRequest(averagedPayload))
+                    val res = ApiClient.api.locate(LocateRequest(averagedPayload, visitedNodes.toList()))
+                    Log.d("NavigationActivity", "passed: ${visitedNodes.toList()}, detected: ${res.node}")
                     val detectedNode = res.node
                     val nextIndex = currentNodeIndex + 1
 
+                    if (detectedNode in visitedNodes) {
+                        Log.w("NavigationActivity", "지나온 노드 무시: $detectedNode")
+                        nextNodeConfirmCount = 0
+                        return@launch
+                    }
+
+                    val validNodes = setOf(
+                        path.getOrNull(currentNodeIndex),
+                        path.getOrNull(currentNodeIndex + 1)
+                    )
+
+                    if (detectedNode !in validNodes) {
+                        Log.w("NavigationActivity", "범위 밖 노드 무시: $detectedNode")
+                        nextNodeConfirmCount = 0
+                        return@launch
+                    }
+
                     if (nextIndex < path.size && detectedNode == path[nextIndex]) {
-                        withContext(Dispatchers.Main) {
-                            currentNodeIndex = nextIndex
-                            onNodeArrived()
+                        nextNodeConfirmCount++
+                        Log.d("NavigationActivity", "다음 노드 감지 $nextNodeConfirmCount/$requiredConfirmCount: $detectedNode")
+
+                        // [FIX] 2회 연속 확인 후 도착 처리
+                        if (nextNodeConfirmCount >= requiredConfirmCount) {
+                            withContext(Dispatchers.Main) {
+                                currentNodeIndex = nextIndex
+                                nextNodeConfirmCount = 0
+                                path.getOrNull(currentNodeIndex)?.let { visitedNodes.add(it) }
+                                onNodeArrived()
+                            }
                         }
+                    } else {
+                        nextNodeConfirmCount = 0
                     }
                 } catch (e: Exception) {
-                    // 오류 무시 후 루프 유지
+                    Log.e("NavigationActivity", "locate 실패: ${e.message}")
                 }
             }
         }, 2000)
@@ -137,7 +180,6 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun onNodeArrived() {
-        // 사양 6번: 마지막 노드 = 목적지 도달
         if (currentNodeIndex >= path.size - 1) {
             TtsManager.speak("목적지에 도달하였습니다. 초기화면으로 돌아갑니다.")
             stopCollect()
@@ -150,9 +192,7 @@ class NavigationActivity : AppCompatActivity() {
         }
 
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
-        val koreanName = nodeNameMap[path[currentNodeIndex]] ?: path[currentNodeIndex]
 
-        // 사양 5번: 다음 노드 도달 안내 (시작점·목적지 제외한 중간 노드)
         if (isDanger) {
             TtsManager.speak("계단 구간입니다. 주의하세요.")
             findViewById<LinearLayout>(R.id.layoutDangerAlert).visibility = View.VISIBLE
@@ -169,6 +209,7 @@ class NavigationActivity : AppCompatActivity() {
         nextIntent.putExtra("currentNodeIndex", currentNodeIndex)
         nextIntent.putExtra("isFirstNode", false)
         nextIntent.putExtra("destinationName", destinationName)
+        nextIntent.putStringArrayListExtra("visitedNodes", ArrayList(visitedNodes))
         startActivity(nextIntent)
     }
 
@@ -182,7 +223,7 @@ class NavigationActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvNodeProgressText).text = "현재: $koreanCurrent → 다음: $koreanNext"
         findViewById<TextView>(R.id.tvNextNodeInfo).text = "다음: $koreanNext"
         findViewById<TextView>(R.id.tvNodeLabel).text = "${destinationName}까지"
-        findViewById<TextView>(R.id.tvLastSent).text = "5초 주기 위치 수집 중..."
+        findViewById<TextView>(R.id.tvLastSent).text = "3초 주기 위치 수집 중..."
     }
 
     override fun onDestroy() {

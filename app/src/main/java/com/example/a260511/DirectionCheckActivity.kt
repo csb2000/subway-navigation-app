@@ -31,6 +31,10 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     private var targetAzimuth = 0f
     private var currentAzimuth = 0f
 
+    private val accelerometerReading = FloatArray(3)
+    private val magnetometerReading = FloatArray(3)
+    private val azimuthHistory = mutableListOf<Float>()
+
     private var correctStartTime = -1L
     private val requiredMs = 3000L
     private var directionConfirmed = false
@@ -55,6 +59,9 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
         val nextNode = if (currentNodeIndex + 1 < path.size) path[currentNodeIndex + 1] else ""
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
 
+        // [FIX] 계단 구간 여부 체크
+        val isStairs = stairsSegments.contains(Pair(currentNode, nextNode))
+
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
 
@@ -63,8 +70,10 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
                 tts.language = Locale.KOREAN
                 ttsReady = true
                 when {
+                    isFirstNode -> speak("점자블록을 따라 이동하세요.")
+                    // [FIX] 계단 구간 TTS
+                    isStairs -> speak("계단 구간입니다. 보조 블럭을 따라 이동하세요.")
                     isDanger -> speak("계단 구간입니다. 주의하세요.")
-                    isFirstNode && destinationName.isNotEmpty() -> speak("${destinationName}을 목적지로 설정하였습니다. 이동 방향을 확인하세요.")
                     else -> speak("다음 노드에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.")
                 }
             }
@@ -72,16 +81,31 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
 
         val koreanNext = nodeNameMap[nextNode] ?: nextNode
         findViewById<TextView>(R.id.tvDestInfo).text =
-            "다음: $koreanNext${if (isDanger) " ⚠ 계단" else ""}"
+            "다음: $koreanNext${if (isDanger || isStairs) " ⚠ 계단" else ""}"
 
         val btnStart = findViewById<Button>(R.id.btnStartMove)
-        btnStart.isEnabled = false
+
+        // [FIX] 첫 노드 또는 계단 구간이면 방향 확인 스킵
+        if (isFirstNode || isStairs) {
+            directionConfirmed = true
+            btnStart.isEnabled = true
+            findViewById<TextView>(R.id.tvDirectionStatus).text =
+                if (isStairs) "보조 블럭을 따라 이동하세요" else "점자블록을 따라 이동하세요"
+            findViewById<TextView>(R.id.tvVibrationInfo).text = "-"
+            handler.postDelayed({ btnStart.performClick() }, 10000)
+        } else {
+            btnStart.isEnabled = false
+        }
+
         btnStart.setOnClickListener {
             val navIntent = Intent(this, NavigationActivity::class.java)
             navIntent.putStringArrayListExtra("path", ArrayList(path))
             navIntent.putStringArrayListExtra("edgeTypes", ArrayList(edgeTypes))
             navIntent.putExtra("currentNodeIndex", currentNodeIndex)
             navIntent.putExtra("destinationName", destinationName)
+            navIntent.putStringArrayListExtra("visitedNodes", ArrayList(
+                intent.getStringArrayListExtra("visitedNodes") ?: listOf()
+            ))
             startActivity(navIntent)
         }
 
@@ -92,7 +116,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
             startActivity(mainIntent)
         }
 
-        if (currentNode.isNotEmpty() && nextNode.isNotEmpty()) {
+        if (!isFirstNode && !isStairs && currentNode.isNotEmpty() && nextNode.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val res = ApiClient.api.direction(DirectionRequest(currentNode, nextNode))
@@ -107,10 +131,14 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         if (directionConfirmed) return
-        val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
-        if (sensor != null) {
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
-        } else {
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) == null ||
+            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) == null) {
             findViewById<Button>(R.id.btnStartMove).isEnabled = true
             findViewById<TextView>(R.id.tvDirectionStatus).text = "방향 확인 준비됨"
         }
@@ -123,10 +151,23 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type == Sensor.TYPE_ORIENTATION) {
-            currentAzimuth = event.values[0]
-            updateDirectionUI(currentAzimuth)
+        when (event.sensor.type) {
+            Sensor.TYPE_ACCELEROMETER -> accelerometerReading.set(event.values)
+            Sensor.TYPE_MAGNETIC_FIELD -> magnetometerReading.set(event.values)
         }
+
+        val rotationMatrix = FloatArray(9)
+        val orientationAngles = FloatArray(3)
+        if (!SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) return
+
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        val rawAzimuth = (Math.toDegrees(orientationAngles[0].toDouble()).toFloat() + 360) % 360
+
+        azimuthHistory.add(rawAzimuth)
+        if (azimuthHistory.size > 5) azimuthHistory.removeAt(0)
+        currentAzimuth = azimuthHistory.average().toFloat()
+
+        updateDirectionUI(currentAzimuth)
     }
 
     private fun updateDirectionUI(azimuth: Float) {
@@ -145,9 +186,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
 
         when {
             diff <= 15 -> {
-                if (correctStartTime == -1L) {
-                    correctStartTime = System.currentTimeMillis()
-                }
+                if (correctStartTime == -1L) correctStartTime = System.currentTimeMillis()
                 val elapsed = System.currentTimeMillis() - correctStartTime
                 val remaining = ((requiredMs - elapsed) / 1000) + 1
 
@@ -162,10 +201,7 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
                     btnStart.isEnabled = true
                     tvStatus.text = "방향 확인 완료!"
                     speak("방향이 일치합니다. 다음 구역에 도달할때까지 직진하세요.")
-                    // [FIX] 1.5초 후 자동으로 이동 시작
-                    handler.postDelayed({
-                        btnStart.performClick()
-                    }, 1500)
+                    handler.postDelayed({ btnStart.performClick() }, 10000)
                 }
             }
             diff <= 30 -> {
@@ -183,6 +219,10 @@ class DirectionCheckActivity : AppCompatActivity(), SensorEventListener {
                 vibrator.cancel()
             }
         }
+    }
+
+    private fun FloatArray.set(values: FloatArray) {
+        values.forEachIndexed { i, v -> this[i] = v }
     }
 
     private fun vibrate(onMs: Long, offMs: Long) {
