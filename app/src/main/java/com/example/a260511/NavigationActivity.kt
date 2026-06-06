@@ -28,7 +28,6 @@ class NavigationActivity : AppCompatActivity() {
     private val recentScanWindows = mutableListOf<List<WifiAp>>()
     private val visitedNodes = mutableSetOf<String>()
 
-    // [FIX] 다음 노드 2회 확인용
     private var nextNodeConfirmCount = 0
     private val requiredConfirmCount = 2
 
@@ -78,7 +77,6 @@ class NavigationActivity : AppCompatActivity() {
         collectTimer = object : Runnable {
             override fun run() {
                 scanAndLocateWithWindow()
-                // [FIX] 폴링 주기 8000 → 3000ms
                 handler.postDelayed(this, 3000)
             }
         }
@@ -89,7 +87,6 @@ class NavigationActivity : AppCompatActivity() {
         val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         wifiManager.startScan()
 
-        // [FIX] 스캔 대기 5000 → 2000ms
         handler.postDelayed({
             val currentRawScan = wifiManager.scanResults
                 .filter { it.level >= -90 }
@@ -141,7 +138,6 @@ class NavigationActivity : AppCompatActivity() {
                         nextNodeConfirmCount++
                         Log.d("NavigationActivity", "다음 노드 감지 $nextNodeConfirmCount/$requiredConfirmCount: $detectedNode")
 
-                        // [FIX] 2회 연속 확인 후 도착 처리
                         if (nextNodeConfirmCount >= requiredConfirmCount) {
                             withContext(Dispatchers.Main) {
                                 currentNodeIndex = nextIndex
@@ -192,12 +188,14 @@ class NavigationActivity : AppCompatActivity() {
         }
 
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
+        // [FIX] 현재 위치명 TTS
+        val koreanName = nodeNameMap[path[currentNodeIndex]] ?: path[currentNodeIndex]
 
         if (isDanger) {
-            TtsManager.speak("계단 구간입니다. 주의하세요.")
+            TtsManager.speak("${koreanName}에 도달하였습니다. 계단 구간입니다. 주의하세요.")
             findViewById<LinearLayout>(R.id.layoutDangerAlert).visibility = View.VISIBLE
         } else {
-            TtsManager.speak("다음 노드에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.")
+            TtsManager.speak("${koreanName}에 도달하였습니다. 다음 구역 이동 방향을 확인하세요.")
             findViewById<LinearLayout>(R.id.layoutDangerAlert).visibility = View.GONE
         }
 
