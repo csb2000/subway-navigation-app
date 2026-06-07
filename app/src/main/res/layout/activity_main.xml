@@ -5,19 +5,21 @@
     android:background="#0d1b2a"
     android:orientation="vertical">
 
-    <!-- 상단 현재 위치 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="28dp">
+        android:padding="28dp"
+        android:importantForAccessibility="yes"
+        android:accessibilityLiveRegion="polite">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="현재 위치"
             android:textColor="#99FFFFFF"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvCurrentLocation"
@@ -27,7 +29,9 @@
             android:text="위치 측정 중..."
             android:textColor="#FFFFFF"
             android:textSize="28sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:contentDescription="현재 위치: 위치 측정 중"
+            android:accessibilityLiveRegion="polite" />
 
         <TextView
             android:id="@+id/tvLocStatus"
@@ -36,23 +40,24 @@
             android:layout_marginTop="4dp"
             android:text="위치 인식됨"
             android:textColor="#5dcaa5"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:accessibilityLiveRegion="polite" />
 
-        <!-- 숨겨진 뷰 (코드 호환용) -->
         <TextView
             android:id="@+id/tvWifiStrength"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvSelectedDestination"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 목적지 설정 다크 카드 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -63,13 +68,17 @@
         android:background="#1a2a3a"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:contentDescription="목적지 설정 버튼. 경로 안내를 시작합니다.">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:importantForAccessibility="no">
 
             <Button
                 android:id="@+id/btnSetDestination"
@@ -80,14 +89,17 @@
                 android:text="목적지 설정"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:contentDescription="목적지 설정. 경로 안내를 시작합니다."
+                android:importantForAccessibility="yes" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="경로 안내를 시작합니다"
                 android:textColor="#99FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:importantForAccessibility="no" />
         </LinearLayout>
 
         <TextView
@@ -95,10 +107,10 @@
             android:layout_height="wrap_content"
             android:text="›"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 현 위치 확인 다크 카드 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -109,13 +121,17 @@
         android:background="#1a2a3a"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:contentDescription="현 위치 확인 버튼. 와이파이 신호로 위치를 재측정합니다.">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:importantForAccessibility="no">
 
             <Button
                 android:id="@+id/btnCheckLocation"
@@ -126,14 +142,17 @@
                 android:text="현 위치 확인"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:contentDescription="현 위치 확인. 와이파이 신호로 위치를 재측정합니다."
+                android:importantForAccessibility="yes" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WiFi 신호로 재측정"
                 android:textColor="#99FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:importantForAccessibility="no" />
         </LinearLayout>
 
         <TextView
@@ -141,7 +160,8 @@
             android:layout_height="wrap_content"
             android:text="›"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
 </LinearLayout>

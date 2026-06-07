@@ -5,7 +5,6 @@
     android:background="#F5F5F5"
     android:orientation="vertical">
 
-    <!-- 상단 헤더 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +21,10 @@
             android:gravity="center"
             android:text="←"
             android:textColor="#FFFFFF"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="뒤로 가기 버튼" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,7 +33,8 @@
             android:text="목적지 선택"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
     <ScrollView
@@ -44,7 +47,6 @@
             android:orientation="vertical"
             android:padding="0dp">
 
-            <!-- 역 출입구 (선택됨 상태) -->
             <LinearLayout
                 android:id="@+id/itemStationExit"
                 android:layout_width="match_parent"
@@ -52,27 +54,33 @@
                 android:background="#e8f5f0"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="역 출입구. 지하철 출구. 약 120미터. 선택됨.">
 
                 <LinearLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="#2a9a76"
                     android:gravity="center"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🚪"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -80,14 +88,16 @@
                         android:text="역 출입구"
                         android:textColor="#222222"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="지하철 출구 · 약 120m"
                         android:textColor="#888888"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <TextView
@@ -101,15 +111,16 @@
                     android:paddingBottom="6dp"
                     android:text="선택됨"
                     android:textColor="#FFFFFF"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:background="#E0E0E0"
+                android:importantForAccessibility="no" />
 
-            <!-- 하행 승강장 -->
             <LinearLayout
                 android:id="@+id/itemDownPlatform"
                 android:layout_width="match_parent"
@@ -117,27 +128,33 @@
                 android:background="#FFFFFF"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="하행 승강장. 1호선 탑승. 약 85미터.">
 
                 <LinearLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="#1a2a3a"
                     android:gravity="center"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🚇"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -145,14 +162,16 @@
                         android:text="하행 승강장"
                         android:textColor="#222222"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1호선 탑승 · 약 85m"
                         android:textColor="#888888"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <TextView
@@ -160,15 +179,16 @@
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textColor="#CCCCCC"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:background="#E0E0E0"
+                android:importantForAccessibility="no" />
 
-            <!-- 상행 승강장 (위험 구간 포함) -->
             <LinearLayout
                 android:id="@+id/itemUpPlatform"
                 android:layout_width="match_parent"
@@ -176,28 +196,34 @@
                 android:background="#FFFFFF"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="상행 승강장. 약 60미터. 위험 구간 포함.">
 
                 <LinearLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="#CC3333"
                     android:gravity="center"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="⚠"
                         android:textColor="#FFFFFF"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:importantForAccessibility="no">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -205,21 +231,24 @@
                         android:text="상행 승강장"
                         android:textColor="#222222"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="약 60m"
                         android:textColor="#888888"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:importantForAccessibility="no" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="위험 구간 포함"
                         android:textColor="#CC3333"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
 
                 <TextView
@@ -227,13 +256,15 @@
                     android:layout_height="wrap_content"
                     android:text="›"
                     android:textColor="#CCCCCC"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:background="#E0E0E0"
+                android:importantForAccessibility="no" />
 
         </LinearLayout>
     </ScrollView>

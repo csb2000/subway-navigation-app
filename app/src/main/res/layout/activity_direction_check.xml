@@ -5,7 +5,6 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <!-- 상단 다크 헤더 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +17,8 @@
             android:layout_height="wrap_content"
             android:text="다음 이동 방향을 확인하세요."
             android:textColor="#99FFFFFF"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvDirectionStatus"
@@ -28,25 +28,28 @@
             android:text="방향 탐색중"
             android:textColor="#FFFFFF"
             android:textSize="26sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:contentDescription="방향 상태: 방향 탐색중"
+            android:accessibilityLiveRegion="assertive" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:importantForAccessibility="no">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="✓ 올바른 방향 · 약 15초"
                 android:textColor="#5dcaa5"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:importantForAccessibility="no" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 노드 진행 표시바 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,7 +58,8 @@
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+        android:importantForAccessibility="no">
 
         <TextView
             android:layout_width="32dp"
@@ -64,13 +68,15 @@
             android:gravity="center"
             android:text="1"
             android:textColor="#FFFFFF"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#5dcaa5" />
+            android:background="#5dcaa5"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -79,13 +85,15 @@
             android:gravity="center"
             android:text="2"
             android:textColor="#0d1b2a"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#444444" />
+            android:background="#444444"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -94,13 +102,15 @@
             android:gravity="center"
             android:text="3"
             android:textColor="#888888"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#444444" />
+            android:background="#444444"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -108,10 +118,10 @@
             android:background="@drawable/circle_dark"
             android:gravity="center"
             android:text="🚩"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 방향 정보 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -132,7 +142,8 @@
                 android:layout_height="wrap_content"
                 android:text="목표 방향"
                 android:textColor="#888888"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:id="@+id/tvAngleDiff"
@@ -142,7 +153,9 @@
                 android:text="0°"
                 android:textColor="#222222"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:contentDescription="각도 차이: 0도"
+                android:accessibilityLiveRegion="polite" />
         </LinearLayout>
 
         <LinearLayout
@@ -157,7 +170,8 @@
                 android:layout_height="wrap_content"
                 android:text="현재 방향"
                 android:textColor="#888888"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:id="@+id/tvVibrationInfo"
@@ -167,19 +181,19 @@
                 android:text="0°"
                 android:textColor="#222222"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:contentDescription="진동 상태: 없음"
+                android:accessibilityLiveRegion="polite" />
         </LinearLayout>
 
-        <!-- 숨겨진 뷰 (코드 호환용) -->
         <TextView
             android:id="@+id/tvDestInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 하단 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -196,7 +210,8 @@
             android:text="이동 시작"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:contentDescription="이동 시작 버튼. 방향 확인이 완료되면 활성화됩니다." />
 
         <Button
             android:id="@+id/btnResetDirection"
@@ -205,7 +220,8 @@
             android:backgroundTint="#f5a623"
             android:text="초기화"
             android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:contentDescription="초기화 버튼. 홈 화면으로 돌아갑니다." />
 
         <TextView
             android:layout_width="match_parent"
@@ -215,7 +231,10 @@
             android:id="@+id/btnCancelDirection"
             android:text="× 안내 종료"
             android:textColor="#888888"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="안내 종료. 홈 화면으로 돌아갑니다." />
     </LinearLayout>
 
 </LinearLayout>

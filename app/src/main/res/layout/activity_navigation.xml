@@ -5,20 +5,21 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <!-- 상단 다크 헤더 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#0d1b2a"
         android:orientation="vertical"
-        android:padding="28dp">
+        android:padding="28dp"
+        android:importantForAccessibility="no">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="직진으로"
             android:textColor="#99FFFFFF"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvNodeStatus"
@@ -28,7 +29,8 @@
             android:text="이동하세요"
             android:textColor="#FFFFFF"
             android:textSize="26sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:accessibilityLiveRegion="polite" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,10 +38,10 @@
             android:layout_marginTop="8dp"
             android:text="✓ 올바른 방향 · 약 15초"
             android:textColor="#5dcaa5"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 노드 진행 표시바 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +50,8 @@
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+        android:importantForAccessibility="no">
 
         <TextView
             android:layout_width="32dp"
@@ -57,13 +60,15 @@
             android:gravity="center"
             android:text="1"
             android:textColor="#FFFFFF"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#5dcaa5" />
+            android:background="#5dcaa5"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -72,13 +77,15 @@
             android:gravity="center"
             android:text="2"
             android:textColor="#0d1b2a"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#444444" />
+            android:background="#444444"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -87,13 +94,15 @@
             android:gravity="center"
             android:text="3"
             android:textColor="#888888"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_weight="1"
-            android:background="#444444" />
+            android:background="#444444"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="32dp"
@@ -101,10 +110,10 @@
             android:background="@drawable/circle_dark"
             android:gravity="center"
             android:text="🚩"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 노드 정보 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -117,7 +126,9 @@
             android:layout_height="wrap_content"
             android:background="#F5F5F5"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:importantForAccessibility="yes"
+            android:accessibilityLiveRegion="polite">
 
             <TextView
                 android:id="@+id/tvNextNodeInfo"
@@ -125,7 +136,8 @@
                 android:layout_height="wrap_content"
                 android:text="2번 출구까지 · 3단계 남음"
                 android:textColor="#888888"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:id="@+id/tvNodeProgressText"
@@ -135,10 +147,10 @@
                 android:text="현재 노드 2 / 4"
                 android:textColor="#222222"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:accessibilityLiveRegion="polite" />
         </LinearLayout>
 
-        <!-- 위험 알림 -->
         <LinearLayout
             android:id="@+id/layoutDangerAlert"
             android:layout_width="match_parent"
@@ -147,39 +159,42 @@
             android:background="#FFEEEE"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:contentDescription="경고: 계단 구간입니다. 주의하세요."
+            android:accessibilityLiveRegion="assertive">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⚠ "
                 android:textColor="#CC0000"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="계단 구간입니다. 주의하세요."
                 android:textColor="#CC0000"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:importantForAccessibility="no" />
         </LinearLayout>
 
-        <!-- 숨겨진 뷰 (코드 호환용) -->
         <TextView
             android:id="@+id/tvNodeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tvLastSent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 
-    <!-- 하단 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -195,7 +210,8 @@
             android:text="✓ 도착 확인"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:contentDescription="도착 확인 버튼. 현재 노드에 도착했을 때 누르세요." />
 
         <Button
             android:id="@+id/btnStopNav"
@@ -204,7 +220,8 @@
             android:backgroundTint="#00000000"
             android:text="× 안내 종료"
             android:textColor="#888888"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:contentDescription="안내 종료 버튼. 홈 화면으로 돌아갑니다." />
     </LinearLayout>
 
 </LinearLayout>
