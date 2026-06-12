@@ -31,6 +31,10 @@ class NavigationActivity : AppCompatActivity() {
     private var nextNodeConfirmCount = 0
     private val requiredConfirmCount = 2
 
+    // [FIX] 5분 타임아웃
+    private val timeoutMs = 5 * 60 * 1000L
+    private var timeoutRunnable: Runnable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
@@ -46,6 +50,18 @@ class NavigationActivity : AppCompatActivity() {
 
         updateNodeUI()
 
+        // [FIX] 5분 타임아웃 시작
+        timeoutRunnable = Runnable {
+            TtsManager.speak("시간이 초과하였습니다. 길안내를 종료합니다.")
+            stopCollect()
+            handler.postDelayed({
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            }, 3000)
+        }
+        handler.postDelayed(timeoutRunnable!!, timeoutMs)
+
         findViewById<Button>(R.id.btnNodeArrived).setOnClickListener {
             currentNodeIndex++
             nextNodeConfirmCount = 0
@@ -56,6 +72,7 @@ class NavigationActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnStopNav).setOnClickListener {
             stopCollect()
             TtsManager.stop()
+            timeoutRunnable?.let { handler.removeCallbacks(it) }
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
@@ -143,6 +160,9 @@ class NavigationActivity : AppCompatActivity() {
                                 currentNodeIndex = nextIndex
                                 nextNodeConfirmCount = 0
                                 path.getOrNull(currentNodeIndex)?.let { visitedNodes.add(it) }
+                                // [FIX] 노드 도달 시 타임아웃 리셋
+                                timeoutRunnable?.let { handler.removeCallbacks(it) }
+                                handler.postDelayed(timeoutRunnable!!, timeoutMs)
                                 onNodeArrived()
                             }
                         }
@@ -179,6 +199,7 @@ class NavigationActivity : AppCompatActivity() {
         if (currentNodeIndex >= path.size - 1) {
             TtsManager.speak("목적지에 도달하였습니다. 초기화면으로 돌아갑니다.")
             stopCollect()
+            timeoutRunnable?.let { handler.removeCallbacks(it) }
             handler.postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -188,7 +209,6 @@ class NavigationActivity : AppCompatActivity() {
         }
 
         val isDanger = if (currentNodeIndex < edgeTypes.size) edgeTypes[currentNodeIndex] == "stairs" else false
-        // [FIX] 현재 위치명 TTS
         val koreanName = nodeNameMap[path[currentNodeIndex]] ?: path[currentNodeIndex]
 
         if (isDanger) {
@@ -226,6 +246,7 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         stopCollect()
+        timeoutRunnable?.let { handler.removeCallbacks(it) }
         super.onDestroy()
     }
 }
