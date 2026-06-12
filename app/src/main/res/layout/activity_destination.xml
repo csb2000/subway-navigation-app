@@ -44,85 +44,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="0dp">
+            android:orientation="vertical">
 
+            <!-- 역 출입구 -->
             <LinearLayout
                 android:id="@+id/itemStationExit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#e8f5f0"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp"
-                android:focusable="true"
-                android:clickable="true"
-                android:contentDescription="역 출입구. 지하철 출구. 약 120미터. 선택됨.">
-
-                <LinearLayout
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="#2a9a76"
-                    android:gravity="center"
-                    android:layout_marginEnd="16dp"
-                    android:importantForAccessibility="no">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🚪"
-                        android:textSize="22sp"
-                        android:importantForAccessibility="no" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:importantForAccessibility="no">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="역 출입구"
-                        android:textColor="#222222"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:importantForAccessibility="no" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="지하철 출구 · 약 120m"
-                        android:textColor="#888888"
-                        android:textSize="13sp"
-                        android:importantForAccessibility="no" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvSelectExit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#5dcaa5"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    android:text="선택됨"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:importantForAccessibility="no" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:importantForAccessibility="no" />
-
-            <LinearLayout
-                android:id="@+id/itemDownPlatform"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
@@ -131,48 +57,34 @@
                 android:padding="20dp"
                 android:focusable="true"
                 android:clickable="true"
-                android:contentDescription="하행 승강장. 1호선 탑승. 약 85미터.">
+                android:contentDescription="역 출입구">
 
                 <LinearLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="#1a2a3a"
+                    android:background="#2a9a76"
                     android:gravity="center"
                     android:layout_marginEnd="16dp"
                     android:importantForAccessibility="no">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🚇"
-                        android:textSize="22sp"
+                        android:text="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
                         android:importantForAccessibility="no" />
                 </LinearLayout>
 
-                <LinearLayout
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:importantForAccessibility="no">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="하행 승강장"
-                        android:textColor="#222222"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:importantForAccessibility="no" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1호선 탑승 · 약 85m"
-                        android:textColor="#888888"
-                        android:textSize="13sp"
-                        android:importantForAccessibility="no" />
-                </LinearLayout>
+                    android:text="역 출입구"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -183,12 +95,366 @@
                     android:importantForAccessibility="no" />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:importantForAccessibility="no" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
 
+            <!-- 개찰구 -->
+            <LinearLayout
+                android:id="@+id/itemFareGate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="개찰구">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="개찰구"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 1층 계단 -->
+            <LinearLayout
+                android:id="@+id/itemFloor1Stairs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="1층 계단">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="1층 계단"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 지하 계단 -->
+            <LinearLayout
+                android:id="@+id/itemB1Stairs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="지하 계단">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="지하 계단"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 지하 엘리베이터 앞 -->
+            <LinearLayout
+                android:id="@+id/itemB1Elevator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="지하 엘리베이터 앞">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="지하 엘리베이터 앞"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 하행 계단 앞 -->
+            <LinearLayout
+                android:id="@+id/itemB1DownStairsFront"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="하행 계단 앞">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="6"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="하행 계단 앞"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 상행 계단 앞 -->
+            <LinearLayout
+                android:id="@+id/itemB1UpStairsFront"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="상행 계단 앞">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="7"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="상행 계단 앞"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 하행 승강장 -->
+            <LinearLayout
+                android:id="@+id/itemDownPlatform"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="하행 승강장">
+
+                <LinearLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#1a2a3a"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="8"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:importantForAccessibility="no" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="하행 승강장"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#CCCCCC"
+                    android:textSize="20sp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
+
+            <!-- 상행 승강장 -->
             <LinearLayout
                 android:id="@+id/itemUpPlatform"
                 android:layout_width="match_parent"
@@ -199,7 +465,7 @@
                 android:padding="20dp"
                 android:focusable="true"
                 android:clickable="true"
-                android:contentDescription="상행 승강장. 약 60미터. 위험 구간 포함.">
+                android:contentDescription="상행 승강장. 위험 구간 포함.">
 
                 <LinearLayout
                     android:layout_width="48dp"
@@ -208,13 +474,13 @@
                     android:gravity="center"
                     android:layout_marginEnd="16dp"
                     android:importantForAccessibility="no">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="⚠"
+                        android:text="9"
                         android:textColor="#FFFFFF"
-                        android:textSize="22sp"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
                         android:importantForAccessibility="no" />
                 </LinearLayout>
 
@@ -224,7 +490,6 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:importantForAccessibility="no">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -233,15 +498,6 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:importantForAccessibility="no" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="약 60m"
-                        android:textColor="#888888"
-                        android:textSize="13sp"
-                        android:importantForAccessibility="no" />
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -260,11 +516,7 @@
                     android:importantForAccessibility="no" />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:importantForAccessibility="no" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:importantForAccessibility="no" />
 
         </LinearLayout>
     </ScrollView>
